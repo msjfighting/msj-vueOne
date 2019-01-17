@@ -19,6 +19,7 @@ module.exports = {
         contentBase:'src', //指定托管目录
         hot:true, // 启动热更新的第一步,
         // host:'10.1.3.13',
+        inline: true, // 实时刷新
         proxy: {
             '/api': { // api表示当前项目请求的key
               target: 'http://kk6923.cn', // 代理服务器路径
