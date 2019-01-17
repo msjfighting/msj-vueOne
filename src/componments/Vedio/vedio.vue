@@ -23,7 +23,7 @@ export default {
     },
     methods: {
         getList(){
-            var url = 'api/index.php/home/interface5/qwsp';
+            var url = this.common.api + '/index.php/home/interface5/qwsp';
             this.$http.get(url).then((res) => {
                 
                 res.body.data.forEach(item =>{

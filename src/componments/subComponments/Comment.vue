@@ -51,7 +51,7 @@ export default {
     methods: {
         getReplyList(){
             Indicator.open('加载中...');
-            var url = 'api/api/public/'
+            var url = this.common.api + '/api/public/'
             this.$http.post(url,
                 {
                 service:"App.Comment_CURD.Get_list",
@@ -79,7 +79,7 @@ export default {
         // 点赞
     linkClick(id){
         Indicator.open()
-       var url = 'api/api/public/'
+       var url = this.common.api + '/api/public/'
        this.$http.post(url,
        {
            service:'App.Comment_CURD.New_laud',
@@ -115,7 +115,7 @@ export default {
                 return Toast('评论内容不可为空!')
           }
           Indicator.open();
-        var url = 'api/api/public/'
+        var url = this.common.api + '/api/public/'
             this.$http.post(url,
             {
                 service:'App.Comment_CURD.Add',

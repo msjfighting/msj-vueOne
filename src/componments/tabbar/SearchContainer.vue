@@ -65,7 +65,7 @@ export default {
   methods: {
     getHotTopics() {
       Indicator.open();
-      var url = "/jianshu/asimov/subscriptions/recommended_collections";
+      var url = this.common.jianshu + "/asimov/subscriptions/recommended_collections";
       this.$http
         .get(url, {
           params: {
@@ -86,7 +86,7 @@ export default {
     },
     getList() {
         Indicator.open();
-      var url = "/jianshu/asimov/trending/now";
+      var url = this.common.jianshu + "/asimov/trending/now";
       this.$http
         .get(url, {
           params: {
