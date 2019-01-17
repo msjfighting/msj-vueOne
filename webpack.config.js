@@ -23,17 +23,17 @@ module.exports = {
         proxy: {
             '/api': { // api表示当前项目请求的key
               target: 'http://kk6923.cn', // 代理服务器路径
-              pathRewrite: {'^/api' : './'}, // 重写路径
+              pathRewrite: {'^/api' : '/'}, // 重写路径
               changeOrigin: true
             },
             '/qingtaoke': { // api表示当前项目请求的key
                 target: 'http://openapi.qingtaoke.com', // 代理服务器路径
-                pathRewrite: {'^/qingtaoke' : './'}, // 重写路径
+                pathRewrite: {'^/qingtaoke' : '/'}, // 重写路径
                 changeOrigin: true
               },
               '/jianshu': { // api表示当前项目请求的key
                 target: 'https://www.jianshu.com', // 代理服务器路径
-                pathRewrite: {'^/jianshu' : './'}, // 重写路径
+                pathRewrite: {'^/jianshu' : '/'}, // 重写路径
                 changeOrigin: true
               }
               
