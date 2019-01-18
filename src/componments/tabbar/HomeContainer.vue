@@ -54,9 +54,8 @@ export default {
     },
     methods: {
         getLunbotu(){
-            Indicator.open();
-              //请求方式
-            var url1 = this.common.api + '/index.php/Home/interface3/ths_turns_img';
+              Indicator.open();
+            var url1 = '/api/index.php/Home/interface3/ths_turns_img';
             this.$http.get(url1)
                 .then(function(res) {
                       Indicator.close();

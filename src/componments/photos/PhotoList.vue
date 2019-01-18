@@ -69,7 +69,7 @@ export default {
                 this.getCategorysByID(0)
         },
         getCategorysByID(id){
-                var url = this.common.api +'/api/public/'
+                var url = 'api/api/public/'
                 this.$http.get(url,{params:{
                     service:'App.Reptilian_Cnoil.Get_list',
                     page:'1',

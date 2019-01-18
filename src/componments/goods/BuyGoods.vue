@@ -60,7 +60,7 @@ export default {
     methods: {
         getGoodList(){
              Indicator.open('加载中...');
-            var url = this.common.qingtaoke + '/qingsoulist'
+            var url = 'qingtaoke/qingsoulist'
             this.$http.get(url,{params:{
                 app_key:this.common.QiangTaoKeKey,
                 v:'1.0',

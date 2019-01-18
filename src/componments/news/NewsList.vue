@@ -42,7 +42,7 @@ export default {
     methods: {
         getNewsList(){
              Indicator.open('加载中...');
-            var url = this.common.api + '/index.php/Home/interface5/jrj_gjsjd'
+            var url = 'api/index.php/Home/interface5/jrj_gjsjd'
             this.$http.get(url,{params:{
                   channel:"jgjd"
             }})

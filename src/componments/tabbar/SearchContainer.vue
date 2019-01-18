@@ -3,13 +3,15 @@
     <div class=" topics">
       <div class="hot">
         <span class="hot-topics disp x">热门专题</span>
-        <span class="collection-change disp" @click="getHotTopics">换一换</span>
+         <span class="collection-change disp" @click="getHotTopics"> 
+            <i class="change-icon" :style="{transform:'rotate('+rotate1+'deg)'}"> </i> 换一批
+        </span>
       </div>
       <div class="category">
         <a  :href="'https://www.jianshu.com/c/'+item.slug+'?utm_source=mobile&utm_medium=collections'" v-for="item in hottopics" :key="item.id">{{ item.title }}</a>
       </div>
     </div>
-    <div class=" hr"></div>
+    <div class="hr"></div>
     <div class=" article">
       <span class="article-title disp x">热门文章</span>
       <ul class="article-content">
@@ -48,6 +50,7 @@
 
 <script>
 import { Indicator } from "mint-ui";
+
 export default {
   data() {
     return {
@@ -55,7 +58,12 @@ export default {
       note_ids: [],
       hottopics: [],
       except_collection_ids: [],
-      isShowLoadMore:false
+      isShowLoadMore:false,
+      stopNetWork:false,
+      allHOT:[],
+      num:[],
+      lastIndex:0,
+      rotate1:0,
     };
   },
   created() {
@@ -64,8 +72,13 @@ export default {
   },
   methods: {
     getHotTopics() {
+      this.rotate1 += 360;
+      if (this.stopNetWork) {
+          this.hottopics = this.getArrayItems(this.allHOT);
+          return ;
+      }
       Indicator.open();
-      var url = this.common.jianshu + "/asimov/subscriptions/recommended_collections";
+      var url = "jianshu/asimov/subscriptions/recommended_collections";
       this.$http
         .get(url, {
           params: {
@@ -74,10 +87,16 @@ export default {
         })
         .then(res => {
           Indicator.close();
-          this.hottopics = res.body;
-          res.body.forEach(item => {
-            this.except_collection_ids.push(item.id);
-          });
+          if (res.body.length <=0 ) {
+             this.stopNetWork = true;
+             this.hottopics = this.getArrayItems(this.allHOT);
+          }else{
+              this.hottopics = res.body;
+              this.allHOT.push(this.hottopics); 
+              res.body.forEach(item => {
+                  this.except_collection_ids.push(item.id);
+              });
+          }
         })
         .catch(err => {
           Indicator.close();
@@ -86,7 +105,7 @@ export default {
     },
     getList() {
         Indicator.open();
-      var url = this.common.jianshu + "/asimov/trending/now";
+      var url = "jianshu/asimov/trending/now";
       this.$http
         .get(url, {
           params: {
@@ -109,8 +128,28 @@ export default {
           console.log(err);
         });
     },
+     getArrayItems(arr) {
+       var arr_temp = [];
+       var length = this.num.length;
+         if(this.num.length == arr.length) {
+              this.num = [];
+              this.num.push(this.lastIndex);
+              length = 0;
+          }
+          while ( length <= arr.length) {
+                 var index_temp = Math.floor(Math.random()*arr.length);
+              if (this.num.indexOf(index_temp)< 0) {
+                  this.num.push(index_temp);
+                  this.lastIndex = index_temp;
+                  console.log(index_temp);
+                  arr_temp = arr[index_temp];
+                  break;
+              }
+          }
+          return arr_temp; 
+    }
   }
-};
+}
 </script>
 
 <style scoped lang="scss">
@@ -128,13 +167,19 @@ export default {
         color: #888;
         right: 10px;
       }
-      .collection-change::before {
+      .change-icon{
+          display: inline-block;
+          margin-right: 5px;
+          padding-top: 3px;
+          -webkit-transition: .5s ease;
+          -o-transition: .5s ease;
+          transition: .5s ease;
+          -webkit-transform: translateY(.5px);
+          -ms-transform: translateY(.5px);
+          transform: translateY(.5px);
+      }
+      .change-icon::before {
         content: url("../../images/change.png");
-        width: 14px;
-        height: 14px;
-        display: inline-block;
-        line-height: 26px;
-        margin-right: 5px;
       }
     }
   }
@@ -149,9 +194,6 @@ export default {
       display: inline-block;
       border: 1px solid #ea6f5a;
       border-radius: 8px;
-
-
-      
     }
   }
   .article {
