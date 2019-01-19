@@ -56,6 +56,7 @@ module.exports = {
             {test:/\.css$/,use:[{loader:'style-loader'},{loader:'css-loader'}]},
             {test:/\.less$/,use:[{loader:'style-loader'},{loader:'css-loader'},{loader:'less-loader'}]},
             {test:/\.scss$/,use:[{loader:'style-loader'},{loader:'css-loader'},{loader:'sass-loader'}]},
+            {test:/\.styl(us)?$/,use:['vue-style-loader','css-loader','stylus-loader']},
             {test:/\.(jpg|png|gif|bmp|jpeg)/,use:['url-loader']}, // 处理图片路径的loader ?limit=17817&name=[hash:8]-[name].[ext]
             // limit给定的值,是图片大小,单位是byte,如果我们引用的图片,大于或者等于给定的limit值,就不会被转成base64,否则将转为base64
             {test:/\.(ttf|eot|svg|woff|woff2)/,use:['url-loader']},

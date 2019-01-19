@@ -2,6 +2,9 @@
 import $ from 'jquery'
 import '../node_modules/amfe-flexible/index.js'
 import './css/style.css'
+import './css/reset.css'
+
+import './stylus/mixin.styl';
 import Vue from 'vue'
 import Vuex from 'vuex'
 import app from './App.vue'
