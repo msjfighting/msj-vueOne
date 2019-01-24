@@ -24,7 +24,7 @@ export default {
      },
     created() {
          var path = this.$route.path
-         if(path=="/home" || path=="/member" || path=="/shopcar" || path=="/search"){
+         if(path=="/home" || path=="/member/sellgoods" || path=="/shopcar" || path=="/search"){
                     this.isShow=false;
                     this.styleobj = {};
             } else{
@@ -47,7 +47,7 @@ export default {
       watch:{
         $route(now,old){     //监控路由变换，控制返回按钮的显示
              
-            if(now.path=="/home" || now.path=="/member" || now.path=="/shopcar" || now.path=="/search"){
+            if(now.path=="/home" || now.path=="/member/sellgoods" || now.path=="/shopcar" || now.path=="/search"){
                     this.isShow=false;
                     this.styleobj = {};
             } else{

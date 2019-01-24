@@ -9,7 +9,63 @@ border-1px($color)
         width:100%
         border:1px solid $color
  .border-1px
-   border-1px(rgba(7, 17, 27, 0.1))       
+   border-1px(rgba(7, 17, 27, 0.1))    
+
+border-none()
+    position:relative
+    &:after
+        display:none
+.border-none
+    border-none()
+
+bg-image($url)//默认2x图，dpr为3则使用3x图
+  background-image: url($url+"@2x.png")
+  @media (-webkit-min-device-pixel-ratio: 3),(-min-device-pixel-ratio: 3)
+    background-image: url($url+"@3x.png")
+
+.bg-image_on_48
+    bg-image('../images/star48_on')
+.bg-image_half_48
+    bg-image('../images/star48_half')
+    
+.bg-image_off_48
+    bg-image('../images/star48_off')
+.bg-image_on_36
+    bg-image('../images/star36_on')
+.bg-image_half_36
+    bg-image('../images/star36_half')
+.bg-image_off_36
+    bg-image('../images/star36_off')
+
+.bg-image_on_24
+    bg-image('../images/star24_on')
+.bg-image_half_24
+    bg-image('../images/star24_half')
+.bg-image_off_24
+    bg-image('../images/star24_off') 
+
+.decrease_1
+     bg-image('../images/decrease_1')
+.discount_1
+     bg-image('../images/discount_1')
+.special_1
+    bg-image('../images/special_1')
+.invoice_1
+    bg-image('../images/invoice_1')
+.guarantee_1
+    bg-image('../images/guarantee_1')
+
+.decrease_3
+     bg-image('../images/decrease_3')
+.discount_3
+     bg-image('../images/discount_3')
+.special_3
+    bg-image('../images/special_3')
+.invoice_3
+    bg-image('../images/invoice_3')
+.guarantee_3
+    bg-image('../images/guarantee_3')
+
 @media(-webkit-min-device-pixel-ratio:1.5),(min-device-pixel-ratio:1.5)
     .border-1px
         &::after

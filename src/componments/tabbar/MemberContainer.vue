@@ -1,6 +1,6 @@
 <template>
     <div >
-      <sell-header></sell-header>
+     <sell-header :seller="seller" ></sell-header>
       <div class="item border-1px">
           <router-link to="/member/sellgoods" class=""> 商品 </router-link>
           <router-link to="/member/ratings"> 评论</router-link>
@@ -25,8 +25,8 @@ export default {
     },
     methods: {
         getSeller(){
-            console.log(data.goods);
-            
+            console.log(data.seller);
+            this.seller = data.seller;
         }
     },
     components: {

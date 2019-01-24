@@ -21,8 +21,8 @@
                 <img :src="item.object.data.list_image_url + '?imageMogr2/auto-orient/strip|imageView2/1/w/160/h/160/format/webp'" alt>
             </span>
             <div class="content">
-              <h1 class="ellipsis">{{ item.object.data.title }}</h1>
-              <p class="ellipsis">{{ item.object.data.public_abbr }}</p>
+              <h1 class="ellipsis-2">{{ item.object.data.title }}</h1>
+              <p class="ellipsis-2">{{ item.object.data.public_abbr }}</p>
             </div>
           </a>
           <div class="author">

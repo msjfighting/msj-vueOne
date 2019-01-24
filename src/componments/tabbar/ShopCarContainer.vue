@@ -1,17 +1,19 @@
 <template>
   <div class="detail-container">
-    <div class="goods-detail card-list" v-for="(item, i) in car" :key="item.id">
-        <img :src="$store.getters.getGoodsStatue[item.id] ? '../../images/selected.png' :'../../images/noselect.png'" class="goods-statue" @click="chageSelectImg(item.id)">
-        <img :src="item.img" alt>
-        <div class="goods-contain">
-            <p>{{ item.title }}</p>
-            <p class="goods-detail-price">
-                ¥{{ item.price }}&nbsp;&nbsp;
-                <numberbox :count="$store.getters.getGoodsCount[item.id]" :goodsid="item.id"></numberbox>&nbsp;&nbsp;
-                <span class="del" @click="delGoods(item.id,i)">删除</span>
-            </p>
-      </div>
-    </div>
+      <div class="goods-wrapper">
+        <div class="goods-detail card-list" v-for="(item, i) in car" :key="item.id">
+          <img :src="$store.getters.getGoodsStatue[item.id] ? '../../images/selected.png' :'../../images/noselect.png'" class="goods-statue" @click="chageSelectImg(item.id)">
+          <img :src="item.img" alt>
+          <div class="goods-contain">
+              <p>{{ item.title }}</p>
+              <p class="goods-detail-price">
+                  ¥{{ item.price }}&nbsp;&nbsp;
+                  <numberbox :count="$store.getters.getGoodsCount[item.id]" :goodsid="item.id"></numberbox>&nbsp;&nbsp;
+                  <span class="del" @click="delGoods(item.id,i)">删除</span>
+              </p>
+          </div>
+        </div>
+      </div> 
     <div class="goods-total card-list">
       <div>
         <p>总计(不含运费)</p>
@@ -64,6 +66,9 @@ export default {
   p {
     color: #515151;
   }
+  .goods-wrapper{
+    padding-bottom: 92px;
+  }
   .goods-detail {
     img {
       height: 80px;
@@ -83,6 +88,10 @@ export default {
     }
   }
   .goods-total {
+    position: fixed;
+    width: 100%;
+    bottom: 50px;
+
     .pricetotal {
       color: red;
       font-size: 16px;
