@@ -1,25 +1,65 @@
 <template>
-    <div class="shopcart">
-       <div class="content">
-           <div class="content-left">
-               <div class="logo-warpper">
-                   <div class="logo">
-                       <i class="icon-shopping_cart"></i>
-                   </div>
-               </div>
-               <div class="price">¥{{totalPrice}}</div>
-               <div class="desc">另需配送费¥{{deliveryprice}}</div>
-           </div>
-           <div class="content-right">
-               <div class="pay"> 
-                   ¥{{minPrice}}
-               </div>
-           </div>
-       </div>
+    <div style="background: rgba(7,17,27,0.5);">
+        <div class="shopcart">
+            <div class="content" @click="togglelist">
+                <div class="content-left">
+                    <div class="logo-warpper">
+                        <div class="logo" :class="totalCount > 0 ? 'heigthlight':''">
+                            <i class="icon-shopping_cart" :class="totalCount > 0 ? 'heigthlight':''"></i>
+                        </div>
+                        <div class="num" v-show="totalCount > 0">{{ totalCount}}</div>
+                    </div>
+                    <div class="price" :class="totalCount > 0 ? 'heigthlight':''">¥&nbsp;{{totalPrice}}</div>
+                    <div class="desc">另需配送费&nbsp;¥&nbsp;{{deliveryPrice}}元</div>
+                </div>
+<!-- 点击去结算,结算过后因为事件冒泡的原因（pay按钮是content详情界面的子节点），详情列表会被展开，用stop.prevent阻止事件冒泡-->
+                <div class="content-right" @click.stop.prevent="pay">
+                    <div class="pay" :class="payClass"> 
+                        {{payDesc}}
+                    </div>
+                </div>
+            </div>
+            <div class="ball-container">
+                <transition-group name="drop" tag="div" 
+                        @before-enter="beforeEnter" 
+                        @enter="enter" 
+                        @after-enter="afterEnter">
+                        <div v-for="ball in balls" :key="ball.show" class="ball" v-show="ball.show" >
+                            <div class="inner inner-hook"></div>
+                        </div>
+                </transition-group>
+            </div> 
+            <transition name="fade">
+                <div class="shopcart-list" v-show="listshow">
+                        <div class="list-header">
+                            <h1 class="title">购物车</h1>
+                            <span class="empty" @click="empty">清空</span>
+                        </div><div class="list-content" ref="listcontent">
+                            <ul>
+                                <li class="food border-1px" v-for="food in selectFoods" :key="food.name">
+                                    <span class="name">{{ food.name }}</span>
+                                    <div class="price">
+                                        <span>¥{{ food.price*food.count }}</span>
+                                    </div>
+                                    <div class="cartcontrol-wrapper">
+                                            <carcontrol :food="food"></carcontrol>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+            </div>
+            </transition>
+        </div>
+         <transition name="mask">
+             <div class="list-mask" v-show="listshow" @click="hideList()"></div>
+         </transition>
     </div>
+    
 </template>
 
 <script>
+import carcontrol from '../carcontrol/carcontrol.vue'
+import BScroll from 'better-scroll'
 export default {
     props:{
         selectFoods:{
@@ -28,8 +68,9 @@ export default {
                 return [];
             }
         },
-        deliveryprice:{
-            type:Number
+        deliveryPrice:{
+            type:Number,
+            default:0
         },
         minPrice:{
             type:Number,
@@ -43,23 +84,165 @@ export default {
                 total += food.price * food.count;
             });
             return total;
+        },
+        totalCount(){
+            let count = 0;
+            this.selectFoods.forEach((food) => {
+                count += food.count
+            })
+           return count;
+        },
+        payDesc(){
+            if (this.totalPrice === 0) {
+                return `¥${this.minPrice}元起送`;
+            }else if(this.totalPrice < this.minPrice){
+                let diff = this.minPrice - this.totalPrice;
+                return `还差¥${diff}元起送`;
+            }else{
+                return '去结算';
+            }
+        },
+        payClass(){
+            if(this.totalPrice < this.minPrice){
+                return 'not-enough';
+            }
+            return 'enough';
+        },
+        listshow(){
+           if (!this.totalCount) {
+               this.fold = true;
+               return false;
+           } 
+           let show = !this.fold;
+           if(show){
+               this.$nextTick(() => {
+                   if(!this.scroll){
+                        this.scroll = new BScroll(this.$refs.listcontent,{
+                       click:true
+                    });
+                   }else{
+                       this.scroll.refresh();
+                   }
+               });
+           }
+           return show;
         }
     },
     data() {
         return {
-            
+            balls:[{   //每一个成员都用来维护当前小球的状态,初始状态都是隐藏的
+                show:false,
+                el:null
+            },
+            {
+                show:false,
+                el:null
+            },
+            {
+                show:false,
+                el:null
+            },
+            {
+                show:false,
+                el:null
+            },
+            {
+                show:false,
+                el:null
+            }],
+            //添加一个变量，用来存贮已经下落的小球
+            dropBalls: [],
+            fold:true,
+
         }
     },
+    components:{
+        carcontrol
+    },
+    methods: {
+        pay(){
+           if(this.totalPrice < this.minPrice) return;
+           window.alert(`支付${this.totalPrice}`)
+        },
+        hideList() { 
+            this.fold = true; //点击mark层，购物车详情列表被收回
+        },
+        empty(){
+            this.selectFoods.forEach((food)=> {
+                food.count = 0;
+            })
+        },
+        togglelist(){
+            if (!this.totalCount) {
+                return;
+            }
+            this.fold = !this.fold;
+        },
+        drop(el) {
+            // console.log(el); //验证是否能正确输出
+            //遍历balls，拿到第一个show为false的球，做一个动画
+            for (let i = 0; i < this.balls.length; i++) {
+                let ball = this.balls[i];
+                if (!ball.show) { //show为false的球
+                    ball.show = true; //小球下落
+                    ball.el = el;//保留当前的DOM对象，用来计算位置
+                    this.dropBalls.push(ball); //dropBalls存的是已经下落的小球,后续要对已经下落的小球进行处理
+                    return;
+                }
+            }
+        },
+       //定义三个钩子函数实现动画
+        beforeEnter(el) { //el为当前执行transition动画的DOM对象
+        //先找到所有为true的小球（连续点击的情况）
+            let count = this.balls.length;
+            while (count--) {
+                let ball = this.balls[count];
+                if (ball.show) { //这个是要运动的小球true
+                    let rect = ball.el.getBoundingClientRect();//获得元素相当于视口的位置
+                    let x = rect.left - 32;
+                    let y = -(window.innerHeight - rect.top - 22);
+                    el.style.display = ''; //v-show默认display：none，设置为空，让它显示
+                    //外层元素是纵向的动画，内层元素是横向的动画
+                    el.style.webkitTransform = `translate3d(0,${y}px,0)`;
+                    el.style.transform = `translate3d(0,${y}px,0)`;
+                    let inner = el.getElementsByClassName('inner-hook')[0];
+                    inner.style.webkitTransform = `translate3d(${x}px, 0, 0)`;
+                    inner.style.transform = `translate3d(${x}px, 0, 0)`;
+                }
+            }
+        },           
+        enter(el) {
+            /* 触发浏览器重绘，重绘之后才可以设置transform*/
+            /* eslint-disable no-unused-vars */
+            let rf = el.offsetHeight;
+            this.$nextTick(() => { //样式重置
+                el.style.webKitTransform = 'translate3d(0,0,0)';//没有变量时只能用单引，不能用反引
+                el.style.transform = 'translate3d(0,0,0)';
+                let inner = el.getElementsByClassName('inner-hook')[0];
+                inner.style.webkitTransform = 'translate3d(0,0,0)';
+                inner.style.transform = 'translate3d(0,0,0)';
+            });
+        },
+        afterEnter(el) { //动画完成
+            let ball = this.dropBalls.shift();//删除并返回第一个ball
+            if (ball) {
+                ball.show = false; //重置ball.show的状态
+                el.style.display = 'none';
+            }
+        },
+     }
 }
 </script>
 
 <style scoped lang="scss">
 .shopcart{
     position: fixed;
+    left: 0;
     bottom: 50px;
     z-index: 50;
     width: 100%;
     height: 48px;
+    background: #000;
     .content{
         display: flex;
         background: #141d27;
@@ -76,17 +259,44 @@ export default {
                 padding: 6px;
                 width: 56px;
                 height: 48px;
-                box-sizing: border-box;
+                // box-sizing: border-box;
+                border-radius: 50%;
+                background: #141d27;
                 .logo{
+                    width: 100%;
+                    height: 100%;
                     background: #2b343c;
                     text-align: center;
                     border-radius: 50%;
-
                     .icon-shopping_cart{
-                        line-height: 44px;
+                        line-height: 37px;
                         font-size: 24px;
-                        color: #808588;
                     }
+                    .icon-shopping_cart::before{
+                        content: url('../../../images/shoppingcart_1.png')
+                    }
+                    .heigthlight::before{
+                         content: url('../../../images/shoppingcart_2.png')
+                    }
+                }
+                .heigthlight{
+                    background:rgb(0, 160, 220);
+                    color: #fff;
+                }
+                .num{
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    width: 24px;
+                    height: 16px;
+                    line-height: 16px;
+                    text-align: center;
+                    border-radius: 16px;
+                    font-size: 9px;
+                    font-weight: 700;
+                    color: white;
+                    background: rgb(240, 20, 20);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
                 }
             }
             .price{
@@ -99,6 +309,9 @@ export default {
                 border-right: 1px solid rgba(255,255,255,0.1);
                 font-size: 16px;
                 font-weight: 700;
+                .heigthlight{
+                    color: #fff;
+                }
             }
             .desc{
                 display: inline-block;
@@ -117,11 +330,130 @@ export default {
                 line-height: 48px;
                 text-align: center;
                 font-size: 12px;
-                color: rgba(255,255,255,0.4); 
                 font-weight: 700;
+            }
+            .not-enough{
                 background: #2b333b;
+                color: rgba(255,255,255,0.4); 
+            }
+            .enough{
+                background: #00b43c;
+                color: #fff;
+            }
+        }
+    }
+    .ball-container{
+        .ball{
+            position: fixed; //相对于视口做布局
+            left: 32px;
+            bottom: 78px;
+            z-index: 200;
+            .inner{
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: #00a0dc;
+                transition: all 0.4s linear;  //x轴做一个线性的过渡即可
+            }
+            &.drop-enter-active,&.drop-leave-active {
+			    transition: all 0.4s cubic-bezier(0.49,-0.29,0.75,0.41);
+		    }
+        }
+    }
+    .shopcart-list{
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        width: 100%;
+        transform :translate3d(0, -100%, 0);
+        &.fade-enter-active, &.fade-leave-active {
+            transition: all 0.5s linear;
+            transform: translate3d(0, -100%, 0) //每个表项相对于当前自身的高度做一个偏移
+        }
+        &.fade-enter, &.fade-leave-active{
+            transform: translate3d(0, 0, 0);
+        }
+        .list-header{
+            height: 40px;
+            line-height: 40px;
+            padding: 0 18px;
+            background: #f3f5f7;
+            border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+            .title{
+                float: left;
+                font-size: 14px;
+                line-height: 40px;
+                color: #07111b;
+                height: 100%;
+                margin: 0;
+            }
+            .empty{
+                float: right;
+                font-size: 12px;
+                color: rgb(0, 160, 220);
+                line-height: 40px;
+            }
+        }
+        .list-content{
+            padding: 0 18px;
+            max-height: 150px;  
+            overflow: hidden;
+            background: #fff;
+            width: 100%;
+            .food{
+                position: relative;
+                padding: 12px 0;
+                box-sizing: border-box;
+            } 
+            .name{
+                line-height: 24px;
+                font-size: 14px;
+                color: rgb(7, 17, 27);
+            }
+            .price{
+                position: absolute;
+                right: 90px;
+                bottom: 12px;
+                line-height: 24px;
+                font-size: 14px;
+                color: red;
+                font-weight: 700;
+            }
+            .cartcontrol-wrapper{
+                position: absolute;
+                right: 0;
+                top: 10px;
+                bottom: 6px;
             }
         }
     }
 }
+.list-mask{
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 50px;
+    width: 100%;
+    z-index: 40;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(1,17,27,0.6);
+}
+.mask-enter-active, .mask-leave-active{
+    opacity: 1;
+    transition: all 0.5s;
+    background: rgba(7, 17, 27, 0.6);
+}
+.mask-enter, .mask-leave-to{
+    opacity: 0;
+    background: rgba(7, 17, 27, 0);
+}
+// .fade-enter-active, .fade-leave-active{
+//     transition: all 0.5s linear;
+//     transform: translate3d(0, -100%, 0)
+// }
+// .fade-enter, .fade-leave-active{
+//     transform: translate3d(0,0,0);
+// }
 </style>

@@ -6,7 +6,7 @@
           <router-link to="/member/ratings"> 评论</router-link>
           <router-link to="/member/seller"> 商家 </router-link>
       </div>
-      <router-view ></router-view>
+      <router-view :seller="seller"></router-view>
     </div>
 </template>
 
@@ -25,7 +25,6 @@ export default {
     },
     methods: {
         getSeller(){
-            console.log(data.seller);
             this.seller = data.seller;
         }
     },
