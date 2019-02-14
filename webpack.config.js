@@ -42,7 +42,9 @@ module.exports = {
     plugins:[ //配置插件的节点
         new webpack.HotModuleReplacementPlugin(),//new一个热更新的模块对象 这是第三步,启动热更新
         new htmlWebpacklugin({
-            template:path.join(__dirname,'./src/index.html'), //指定模板页面,将来会根据指定的页面路径去除生产内存中的页面
+            //指定模板页面,将来会根据指定的页面路径去除生产内存中的页面 
+            // 将src下的template属性描述的文件根据当前配置的output.path
+            template:path.join(__dirname,'./src/index.html'), 
             filename: 'index.html' // 指定生成的页面名称
         }),
         new VueLoaderPlugin(),
